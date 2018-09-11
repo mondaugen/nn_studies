@@ -1,4 +1,5 @@
 # Solve Least-Squares with SGD
+# Here we find gradient using all data points each step.
 
 # find min_x ((Ax - y)^T * (Ax - y))
 
@@ -23,14 +24,14 @@ class LinearRegression(chainer.Link):
             #self.b = chainer.Parameter(
             #    gaus((n_out,1)).astype('float32'), (n_out,1))
 
-    def __call__(self, a):
-        # Call with a row of A
-        y_ = a @ self.x# + self.b
+    def __call__(self, A):
+        # Call with all of A
+        y_ = A @ self.x# + self.b
         #return (y - y_) ** 2.
         return y_
 
 # Number of datapoints
-M=100
+M=1000
 # Number of coefficients
 N=3
 # Number of output variables
@@ -55,11 +56,7 @@ y=gaus((M,1)).astype('float32')
 n_iter = 500
 
 for n in range(n_iter):
-    idcs=list(range(A.shape[0]))
-    #random.shuffle(idcs)
-    for i,y_ in zip(idcs,y):
-        sgd.update(L_x,A[i][None],y_.reshape((1,1)))
-        #random.shuffle(idcs)
+    sgd.update(L_x,A,y)
     e=A@lr.x.data - y
     print('Loss: %f' % (e.T@e,))
 
